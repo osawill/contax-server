@@ -1,0 +1,22 @@
+{
+  "name": "contax-server",
+  "version": "0.0.0",
+  "description": "API Server",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/osawill/contax-server.git"
+  },
+  "author": "Osasu Eboh",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/osawill/contax-server/issues"
+  },
+  "dependencies": {
+    "express": "~4.13.4",
+    "body-parser": "~1.14.2"
+  }
+}

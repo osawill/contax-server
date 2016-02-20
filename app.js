@@ -1,10 +1,13 @@
 // Main
 //Load modules
 var express    = require('express');        // call express
+var config = require('./config');
 var bodyParser = require('body-parser');
 var jwt = require('express-jwt');
 var cors = require('cors');
+var massive = require("massive");
 
+var db = massive.connectSync({connectionString : config.db});
 var app        = express();                 // define our app using express
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -26,16 +29,18 @@ router.get('/', function(req, res) {
 
 var api = require('./routes/api');
 
-/*var dbAllow = function(req, res, next){//Make our db accessible to our router
+var injectdb = function(req, res, next){//Make our db accessible to our router
 	req.db = db;
 	next();
-};*/
+};
 // REGISTER OUR ROUTES -------------------------------
 
 app.use(cors()); //Cross Origin Request
 // all of our routes will be prefixed with /api
-app.use('/api', jwtCheck, api);
-app.use('/', router);
+// Check token, add db service, send to api route
+//app.use('/api', jwtCheck, injectdb, api); // Production
+app.use('/api', injectdb, api); // Dev-only
+app.use('/', router); //Default page
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {
@@ -71,7 +76,7 @@ process.on('exit', function () {
 // START THE SERVER
 // =============================================================================
 var server;
-var port = process.env.PORT || 3000;        // set our port
+var port = process.env.PORT || 3001;        // set our port
 
 server = app.listen(port);
 console.log('Api server starting on port ' + port);

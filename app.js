@@ -1,36 +1,77 @@
-// server.js
-
-// BASE SETUP
-// =============================================================================
-
-// call the packages we need
+// Main
+//Load modules
 var express    = require('express');        // call express
-var app        = express();                 // define our app using express
 var bodyParser = require('body-parser');
+var jwt = require('express-jwt');
+var cors = require('cors');
 
+var app        = express();                 // define our app using express
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-var port = process.env.PORT || 3000;        // set our port
+var jwtCheck = jwt({
+  secret: new Buffer('4icOObTPDXYBH3hJAsScIXN_Ay44jjoxYKiuQLQErtHLPZXX2h40c9o-VTT4HCMH', 'base64'),
+  audience: 'IJqdCQThmwg3Z7xOAqw3ve7pAFDbPp36'
+});
 
 // ROUTES FOR OUR API
-// =============================================================================
+// Middleware
 var router = express.Router();              // get an instance of the express Router
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
 router.get('/', function(req, res) {
-    res.json({ message: 'hooray! welcome to our api!' });   
+    res.json({ message: 'Hooray! welcome to our api!' });   
 });
 
-// more routes for our API will happen here
+var api = require('./routes/api');
 
+/*var dbAllow = function(req, res, next){//Make our db accessible to our router
+	req.db = db;
+	next();
+};*/
 // REGISTER OUR ROUTES -------------------------------
-// all of our routes will be prefixed with /api
-app.use('/api', router);
 
+app.use(cors()); //Cross Origin Request
+// all of our routes will be prefixed with /api
+app.use('/api', jwtCheck, api);
+app.use('/', router);
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500)
+		.json({
+      message: err.message,
+      error: err
+    });
+  });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+  res.status(err.status || 500)
+	  .json({
+    message: err.message,
+    error: {}
+  });
+});
+
+//Exit handlers
+function killMe() {
+	server.close();
+	console.log('Shutting api server down...');
+	process.exit();
+};
+process.on('SIGINT', killMe); //Ctrl + C
+process.on('exit', function () {
+	console.log('Exiting...');
+});
 // START THE SERVER
 // =============================================================================
-app.listen(port);
-console.log('Magic happens on port ' + port);
+var server;
+var port = process.env.PORT || 3000;        // set our port
+
+server = app.listen(port);
+console.log('Api server starting on port ' + port);

@@ -15,13 +15,21 @@ router.get('/all', function(req, res){
 });
 
 router.get('/info', function(req, res){
-	console.log('API[info] request from('+ req.headers.email || req.headers.id+')');
+	var id = req.headers.email || req.headers.id;
+	console.log('API[info] request from('+ id +')');
 	
 	var db = req.db;
 	var account = db.accounts.findOneSync({email: req.headers.email});
-	var profile = db.profiles.findOneSync({uid: account.uid});
+	var profile = db.profile.findOneSync({uid: account.uid});
 	var phoneid = db.phoneNums.findOneSync({uid: account.uid});
-	res.json(account)
+	
+	var body = {
+		account: account,
+		profile: profile,
+		phoneID: phoneid,
+	}
+	console.log('API[info] response to(' + id + '):', body)
+	res.json(body)
 });
 
 module.exports = router;

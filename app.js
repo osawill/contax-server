@@ -23,9 +23,10 @@ var jwtCheck = jwt({
 var router = express.Router();              // get an instance of the express Router
 
 // test route to make sure everything is working (accessed at GET http://localhost:8080/api)
-router.get('/', function(req, res) {
-    res.json({ message: 'Hooray! welcome to our api!' });   
-});
+//router.get('/', function(req, res) {
+//    res.json({ message: 'Hooray! welcome to our api!' });   
+//});
+router.use('/', require('./routes'));
 
 var api = require('./routes/api');
 
@@ -39,8 +40,8 @@ app.use(cors()); //Cross Origin Request
 // all of our routes will be prefixed with /api
 // Check token, add db service, send to api route
 //app.use('/api', jwtCheck, injectdb, api); // Production
-app.use('/api', injectdb, api); // Dev-only
-app.use('/', router); //Default page
+app.use('/api', injectdb); // Dev-only
+app.use('/', require('./routes')); //Default page
 // development error handler
 // will print stacktrace
 if (app.get('env') === 'development') {

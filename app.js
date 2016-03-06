@@ -6,8 +6,10 @@ var bodyParser = require('body-parser');
 var jwt = require('express-jwt');
 var cors = require('cors');
 var massive = require("massive");
+var promisify = require("promisify-node");
 
 var db = massive.connectSync({connectionString : config.db});
+promisify(db);
 var app        = express();                 // define our app using express
 // configure app to use bodyParser()
 // this will let us get the data from a POST

@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 
 function getid(req) {
-	return req.headers.email || req.headers.id;
+	return req.headers.uid || req.headers.email;
 }
 
 ////Phonebook routes////

@@ -21,6 +21,7 @@
     "cors": "^2.7.1",
     "express": "~4.13.4",
     "express-jwt": "^3.3.0",
-    "massive": "^2.1.0"
+    "massive": "^2.1.0",
+    "promisify-node": "^0.3.0"
   }
 }

@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 
 function getid(req) {
-	return req.headers.email || req.headers.id;
+	return req.headers.uid || req.headers.email;
 }
 
 ////Profile routes////
@@ -36,24 +36,36 @@ router.get('/:id', function (req, res) {
 });
 //Create/Update profile
 router.route('/')
+	.get(function (req, res) {
+		res.status(404).json({message: 'This command is not suppported'});
+})
 	.post(function (req, res) { //Create
-	var id = getid(req);
-	console.log('API[profile] creating profile for ' + id);
+		var id = getid(req);
+		console.log('API[profile] creating profile for ' + id);
 
-	var db = req.db;
-	//We already have a profile for this user -- exit
-	if (db.profile.findOneSync({uid: id})) {
-		res.status(300).json;
-		return;
-	};
-	console.log(req.body);
-	//dp.profile.save({}, function(err, doc) {
-//		if(err)
-//			res.status(300).json({error: err});
-//		else
-//			res.status(200).json({data: doc, complete: true});
-	//});	
-	res.status(200).json({complete: true});
+		var db = req.db;
+		var new_profile = req.body;
+		//We already have a profile for this user -- exit
+		
+		var check = db.profile.findOneSync({uid: id});
+		console.log(id, check);
+		if (check) {
+			res.status(300).json({err: 'Profile exists'});
+			return;
+		};
+		new_profile.uid = id;
+		console.log(new_profile);
+		db.profile.insert(new_profile, function(err, doc) {
+			if(err){
+				console.log('API[profile] error creating profile for ' + id + ' - ' + err);
+				res.status(300).json({error: err});
+			}
+			else {
+				console.log('API[profile] created profile for ', id, '-', doc);
+				res.status(200).json({data: doc, complete: true});
+			}
+		});	
+//		res.status(200).json({complete: true});
 })
 	.put(function (req, res) { //Update
 		var id = getid(req);
